@@ -50,7 +50,7 @@ class TvDatafeed:
 
         self.ws_debug = False
 
-        self.token = self.__auth(username, password)
+        self.token = None
 
         if self.token is None:
             self.token = "unauthorized_user_token"
@@ -165,6 +165,7 @@ class TvDatafeed:
                                "high", "low", "close", "volume"]
             ).set_index("datetime")
             data.insert(0, "symbol", value=symbol)
+            data.to_csv("data-usdtd.csv")
             return data
         except AttributeError:
             logger.error("no data, please check the exchange and symbol")
@@ -307,14 +308,6 @@ class TvDatafeed:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     tv = TvDatafeed()
-    print(tv.get_hist("CRUDEOIL", "MCX", fut_contract=1))
-    print(tv.get_hist("NIFTY", "NSE", fut_contract=1))
-    print(
-        tv.get_hist(
-            "EICHERMOT",
-            "NSE",
-            interval=Interval.in_1_hour,
-            n_bars=500,
-            extended_session=False,
-        )
-    )
+    print(tv.get_hist("USDT.D", "CRYPTOCAP", interval=Interval.in_daily,
+                      n_bars=5000))
+
