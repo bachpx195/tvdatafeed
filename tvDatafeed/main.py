@@ -131,6 +131,23 @@ class TvDatafeed:
         self.ws.send(m)
 
     @staticmethod
+    def __format_symbol(symbol, exchange, contract: int = None):
+
+        if ":" in symbol:
+            pass
+        elif contract is None:
+            symbol = f"{exchange}:{symbol}"
+
+        elif isinstance(contract, int):
+            symbol = f"{exchange}:{symbol}{contract}!"
+
+        else:
+            raise ValueError("not a valid contract")
+
+        return symbol
+
+
+    @staticmethod
     def __create_df(raw_data, symbol):
         try:
             out = re.search('"s":\[(.+?)\}\]', raw_data).group(1)
@@ -165,26 +182,11 @@ class TvDatafeed:
                                "high", "low", "close", "volume"]
             ).set_index("datetime")
             data.insert(0, "symbol", value=symbol)
-            data.to_csv("data-usdtd.csv")
+            data.to_csv("data-total-month.csv")
             return data
         except AttributeError:
             logger.error("no data, please check the exchange and symbol")
 
-    @staticmethod
-    def __format_symbol(symbol, exchange, contract: int = None):
-
-        if ":" in symbol:
-            pass
-        elif contract is None:
-            symbol = f"{exchange}:{symbol}"
-
-        elif isinstance(contract, int):
-            symbol = f"{exchange}:{symbol}{contract}!"
-
-        else:
-            raise ValueError("not a valid contract")
-
-        return symbol
 
     def get_hist(
         self,
@@ -308,6 +310,6 @@ class TvDatafeed:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     tv = TvDatafeed()
-    print(tv.get_hist("USDT.D", "CRYPTOCAP", interval=Interval.in_daily,
+    print(tv.get_hist("TOTAL", "CRYPTOCAP", interval=Interval.in_monthly,
                       n_bars=5000))
 
