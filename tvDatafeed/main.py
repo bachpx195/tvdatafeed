@@ -52,6 +52,11 @@ class TvDatafeed:
 
         self.token = None
 
+        # self.__auth('bachpx195', 'quachtinh95')
+
+        # from urllib.request import urlopen
+        # print(urlopen('https://www.howsmyssl.com/a/check').read())
+
         if self.token is None:
             self.token = "unauthorized_user_token"
             logger.warning(
@@ -71,13 +76,19 @@ class TvDatafeed:
             data = {"username": username,
                     "password": password,
                     "remember": "on"}
-            try:
-                response = requests.post(
-                    url=self.__sign_in_url, data=data, headers=self.__signin_headers)
-                token = response.json()['user']['auth_token']
-            except Exception as e:
-                logger.error('error while signin')
-                token = None
+
+            response = requests.post(
+                url=self.__sign_in_url, data=data, headers=self.__signin_headers, )
+                
+            token = response.json()['user']['auth_token']        
+            # try:
+            #     response = requests.post(
+            #         url=self.__sign_in_url, data=data, headers=self.__signin_headers)
+
+            #     token = response.json()['user']['auth_token']
+            # except Exception as e:
+            #     logger.error('error while signin')
+            #     token = None
 
         return token
 
@@ -182,7 +193,7 @@ class TvDatafeed:
                                "high", "low", "close", "volume"]
             ).set_index("datetime")
             data.insert(0, "symbol", value=symbol)
-            data.to_csv("data-total-month.csv")
+            data.to_csv("data-btcd-1m.csv")
             return data
         except AttributeError:
             logger.error("no data, please check the exchange and symbol")
@@ -310,6 +321,9 @@ class TvDatafeed:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     tv = TvDatafeed()
-    print(tv.get_hist("TOTAL", "CRYPTOCAP", interval=Interval.in_monthly,
-                      n_bars=5000))
+    # print(tv.get_hist("BTC.D", "CRYPTOCAP", interval=Interval.in_1_minute,
+    #                   n_bars=50000))
+    
+    print(tv.get_hist("SPX", "SP", interval=Interval.in_daily,
+                       n_bars=50000))
 
